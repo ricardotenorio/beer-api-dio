@@ -3,7 +3,11 @@ package ricardotenorio.github.com.beerstock.service;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ricardotenorio.github.com.beerstock.dto.BeerDTO;
 import ricardotenorio.github.com.beerstock.entity.Beer;
+import ricardotenorio.github.com.beerstock.exception.BeerAlreadyRegisteredException;
+import ricardotenorio.github.com.beerstock.exception.BeerNotFoundException;
+import ricardotenorio.github.com.beerstock.mapper.BeerMapper;
 import ricardotenorio.github.com.beerstock.repository.BeerRepository;
 
 import java.util.List;
@@ -15,7 +19,7 @@ import java.util.stream.Collectors;
 public class BeerService {
 
   private final BeerRepository beerRepository;
-  private final BeerMapper beerMapper = beerMapper.INSTANCE;
+  private final BeerMapper beerMapper = BeerMapper.INSTANCE;
 
   public BeerDTO createBeer(BeerDTO beerDTO) throws BeerAlreadyRegisteredException {
     verifyIfIsAlreadyRegistered(beerDTO.getName());
@@ -27,7 +31,7 @@ public class BeerService {
 
   public BeerDTO findByName(String name) throws BeerNotFoundException {
     Beer foundBeer = beerRepository.findByName(name)
-        .orElseThrow(() -> new BeerNotFoundException);
+        .orElseThrow(() -> new BeerNotFoundException(name));
 
     return beerMapper.toDTO(foundBeer);
   }
@@ -48,7 +52,7 @@ public class BeerService {
     Optional<Beer> optSavedBeer = beerRepository.findByName(name);
 
     if(optSavedBeer.isPresent()) {
-      throw new BeerAlreadyEegisteredException(name);
+      throw new BeerAlreadyRegisteredException(name);
     }
   }
 
