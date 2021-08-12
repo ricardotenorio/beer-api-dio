@@ -155,4 +155,24 @@ public class BeerServiceTest {
 
   }
 
+  // increment
+
+  @Test
+  void whenIncrementIsCalledThenIncrementBeerStock() {
+
+    // given
+    BeerDTO expectedBeerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+    Beer expectedBeer = beerMapper.toModel(expectedBeerDTO);
+
+    int quantityToIncrement = 10;
+    int expectedQuantityAfterIncrement = expectedBeerDTO.getQuantity() + quantityToIncrement;
+
+    // then
+    BeerDTO incrementedBeerDTO = beerService.increment(expectedBeerDTO.getId(), quantityToIncrement);
+
+    assertThat(expectedQuantityAfterIncrement, equalTo(incrementedBeerDTO.getQuantity()));
+    assertThat(expectedQuantityAfterIncrement, lessThan(expectedBeerDTO.getMax()));
+
+  }
+
 }

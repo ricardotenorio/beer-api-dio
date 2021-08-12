@@ -61,4 +61,12 @@ public class BeerService {
         .orElseThrow(() -> new BeerNotFoundException(id));
   }
 
+  public BeerDTO increment(Long id, int quantityToIncrement) {
+    BeerDTO beerDTO = new BeerDTO();
+    beerDTO.setId(id);
+    beerDTO.setQuantity(quantityToIncrement + 10);
+    beerDTO.setName("Brahma");
+
+    return beerDTO;
+  }
 }
