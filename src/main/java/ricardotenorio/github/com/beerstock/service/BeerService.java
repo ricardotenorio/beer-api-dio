@@ -7,6 +7,7 @@ import ricardotenorio.github.com.beerstock.dto.BeerDTO;
 import ricardotenorio.github.com.beerstock.entity.Beer;
 import ricardotenorio.github.com.beerstock.exception.BeerAlreadyRegisteredException;
 import ricardotenorio.github.com.beerstock.exception.BeerNotFoundException;
+import ricardotenorio.github.com.beerstock.exception.BeerStockExceededException;
 import ricardotenorio.github.com.beerstock.mapper.BeerMapper;
 import ricardotenorio.github.com.beerstock.repository.BeerRepository;
 
@@ -61,17 +62,16 @@ public class BeerService {
         .orElseThrow(() -> new BeerNotFoundException(id));
   }
 
-  public BeerDTO increment(Long id, int quantityToIncrement) throws BeerNotFoundException {
-    Optional<Beer> optionalBeer = beerRepository.findById(id);
+  public BeerDTO increment(Long id, int quantityToIncrement) throws BeerNotFoundException, BeerStockExceededException {
+    Beer beerToUpdate = verifyIfExists(id);
 
-    if (optionalBeer.isPresent()) {
-      Beer beer = optionalBeer.get();
-      beer.setQuantity(beer.getQuantity() + quantityToIncrement);
-      Beer updatedBeer = beerRepository.save(beer);
+    if (quantityToIncrement + beerToUpdate.getQuantity() <= beerToUpdate.getMax()) {
+      beerToUpdate.setQuantity(beerToUpdate.getQuantity() + quantityToIncrement);
+      Beer updatedBeer = beerRepository.save(beerToUpdate);
 
       return beerMapper.toDTO(updatedBeer);
     }
 
-    throw new BeerNotFoundException(id);
+    throw new BeerStockExceededException(id);
   }
 }
