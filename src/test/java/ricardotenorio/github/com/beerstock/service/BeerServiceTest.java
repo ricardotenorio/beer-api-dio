@@ -196,4 +196,38 @@ public class BeerServiceTest {
 
   }
 
+  @Test
+  void whenIncrementAfterSumIsGreaterThanMaxThenThrowException() {
+
+    // given
+    BeerDTO expectedBeerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+    Beer expectedBeer = beerMapper.toModel(expectedBeerDTO);
+    int quantityToIncrement = 45;
+
+    // when
+    when(beerRepository.findById(expectedBeerDTO.getId())).thenReturn(Optional.of(expectedBeer));
+
+    // then
+    assertThrows(BeerStockExceededException.class,
+        () -> beerService.increment(expectedBeerDTO.getId(), quantityToIncrement));
+
+  }
+
+  @Test
+  void whenDecrementAfterSubtractionIsLessThanZeroThenThrowException() {
+
+    // given
+    BeerDTO expectedBeerDTO = BeerDTOBuilder.builder().build().toBeerDTO();
+    Beer expectedBeer = beerMapper.toModel(expectedBeerDTO);
+    int quantityToDecrement = 20;
+
+    // when
+    when(beerRepository.findById(expectedBeerDTO.getId())).thenReturn(Optional.of(expectedBeer));
+
+    // then
+    assertThrows(BeerStockExceededException.class,
+        () -> beerService.decrement(expectedBeerDTO.getId(), quantityToDecrement));
+
+  }
+
 }

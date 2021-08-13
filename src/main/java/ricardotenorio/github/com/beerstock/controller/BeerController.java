@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ricardotenorio.github.com.beerstock.dto.BeerDTO;
+import ricardotenorio.github.com.beerstock.dto.QuantityDTO;
 import ricardotenorio.github.com.beerstock.exception.BeerAlreadyRegisteredException;
 import ricardotenorio.github.com.beerstock.exception.BeerNotFoundException;
+import ricardotenorio.github.com.beerstock.exception.BeerStockExceededException;
 import ricardotenorio.github.com.beerstock.service.BeerService;
 
 import javax.validation.Valid;
@@ -41,6 +43,18 @@ public class BeerController implements BeerControllerDocs {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteById(@PathVariable Long id) throws BeerNotFoundException {
     beerService.deleteById(id);
+  }
+
+  @PatchMapping("/{id}/increment")
+  public BeerDTO increment(@PathVariable Long id, @RequestBody @Valid QuantityDTO quantityDTO)
+      throws BeerNotFoundException, BeerStockExceededException {
+    return beerService.increment(id, quantityDTO.getQuantity());
+  }
+
+  @PatchMapping("/{id}/decrement")
+  public BeerDTO decrement(@PathVariable Long id, @RequestBody @Valid QuantityDTO quantityDTO)
+      throws BeerNotFoundException, BeerStockExceededException {
+    return beerService.decrement(id, quantityDTO.getQuantity());
   }
 
 }
